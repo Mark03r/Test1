@@ -9,12 +9,14 @@ created: 28/06/2018
 
 ## Simple Summary
 
-This is a standard interface to manage the crowdsale of an ERC-20 token on the Ethereum blockchain. This interface can be used by any venture(also non-crypto related ventures) to raise funds in a decentralized manner on the Ethereum blockchain.
+This is a standard interface to manage the crowdsale of an ERC-20 token on the Ethereum blockchain. This interface can be used by any venture (also non-crypto related ventures) to raise funds in a decentralized manner on the Ethereum blockchain.
 
 
 ## Description
 This crowdsale mechanism allows the initiator of the crowdsale (also called the beneficiary) to make use of two distinct stages: a presale stage and a main sale stage. There are a few important distinctions between a presale stage and main sale stage.
+
 The purpose of the presale is to ….. The ether that is contributed during the presale stage is directly accessible to the beneficiary of the crowdsale and is used for…. Investors that contribute during the presale get a higher rate of tokens than the investors that contribute during the main sale. However, the contributions that are made during the presale stage are non-refundable. This means that if the presale does not raise the envisioned amount, investors during the presale phase will not get their ether back. 
+
 The purpose of the main sale is to …… The ether that is contributed during the main sale stage is accessible to the beneficiary after the crowdsale and only when the main sale was successful. The ether that is raised during the main sale is used for… The investors that contribute during the main sale stage get a lower rate of tokens than the investors that contribute during the presale. However, their contributions are refundable in the case of a failed main sale. If the main sale does not raise the envisioned minimum amount, the main sale contributors will be refunded their complete funds (minus the transaction fees). 
 
 This standard interface also allows the initiator to incentivize investors to contribute early on during the main sale. It does so by giving the initiator the possibility to assign different conversion rates to different timeframes within the main sale. For example, investors that contribute during the first 24 hours of the main sale could be rewarded with an allocation of 20% bonus tokens. Investors that contribute during the first week could for example be rewarded with an allocation of 10% bonus tokens, while the investors that contribute after the first week are not rewarded with any bonus tokens. 
@@ -266,7 +268,7 @@ function getRate(uint _phase, uint _volume) external view returns (uint)
 
 #### toTokens
 
-This function converts the amount of wei sent by the contributor into tokens using the `_rate` from the getRate function.
+This function converts the amount of wei sent by the contributor into tokens using the `_rate` from the `getRate` function.
 
 ``` js
 function toTokens(uint _wei, uint _rate) external view returns (uint)
@@ -297,9 +299,10 @@ function contribute() external payable returns (uint)
 
 #### contributeFor
 
-Does this receive the same amount of either as the two functions above. But instead, does it issue an extra amount of tokens that are allocated for the team holding the crowdsale?
+Does this receive the same amount of either as the two functions above? But instead, does it issue an extra amount of tokens that are allocated for the team holding the crowdsale?
 
-``` function contributeFor(address _beneficiary) external payable returns (uint)
+``` js 
+function contributeFor(address _beneficiary) external payable returns (uint)
 ```
 
 
@@ -346,7 +349,7 @@ function withdrawEtherTo(address _beneficiary) external
 
 #### refund
 
-This function refunds the amount of wei that was contributed, in the case of an unsuccessful crowdsale. The crowdsale is considered unsuccessful if minAmount was not raised before the end of the crowdsale.
+This function refunds the amount of wei that was contributed, in the case of an unsuccessful crowdsale. The crowdsale is considered unsuccessful if  the minimum amount was not raised before the end of the crowdsale.
 
 ``` js
 function refund() external 
@@ -356,7 +359,7 @@ function refund() external
 
 #### refundTo
 
-This function refunds the amount of wei that was contributed, in the case of an unsuccessful crowdsale. The crowdsale is considered unsuccessful if minAmount was not raised before the end of the crowdsale. How does this differ from the previous function?
+This function refunds the amount of wei that was contributed, in the case of an unsuccessful crowdsale. The crowdsale is considered unsuccessful if the minimum amount was not raised before the end of the crowdsale. How does this differ from the previous function?
 
 ``` js
 function refundTo(address _beneficiary) external
