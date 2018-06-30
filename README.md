@@ -11,7 +11,7 @@ created: 30/06/2018
 This is a standard interface for ERC-20 compatible tokens that is very similar to the original standard interface by Vogelsteller and Buterin. The standard allows for the implementation of a standard API for tokens within smart contracts and provides basic functionality to transfer tokens, as well as allow tokens to be approved so they can be spent by another on-chain third party. However, the original `approve` function in the ERC-20 token standard is relatively susceptible to attack vectors. This token standard attempts to solve this problem by adding an alternative `approve` function. 
 
 ## Motivation
-The original `approve` function in the ERC-20 token standard is relatively susceptible to attack vectors. This token standard attempts to solve this problem.
+The original `approve` function in the ERC-20 token standard is relatively susceptible to attack vectors. This token standard attempts to solve this problem by adding an alternative `approve` function.
 
 ## Specification
 
