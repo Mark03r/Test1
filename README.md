@@ -1,94 +1,81 @@
 ---
-title: ERC-20 Token Standard with alternative `approve` function. 
-author: Fabian Vogelsteller <fabian@ethereum.org>, Vitalik Buterin <vitalik.buterin@ethereum.org>, with additions by Frank Bonnet <?> 
+title: Standard for ERC-20 Token with additional functionalities
+author: Frank Bonnet <?>,
 type: Standards Track
 category: ERC
 status: Final
-created: 30/06/2018
+created: 30/06/2018 
 ---
 
 ## Simple Summary
-This is a standard interface for ERC-20 compatible tokens that is very similar to the original standard interface by Vogelsteller and Buterin. The standard allows for the implementation of a standard API for tokens within smart contracts and provides basic functionality to transfer tokens, as well as allow tokens to be approved so they can be spent by another on-chain third party. However, the original `approve` function in the ERC-20 token standard is relatively susceptible to attack vectors. This token standard attempts to solve this problem by adding an alternative `approve` function. 
 
-## Motivation
-The original `approve` function in the ERC-20 token standard is relatively susceptible to attack vectors. This token standard attempts to solve this problem by adding an alternative `approve` function.
+This is a standard interface that adds the following functionalities to the basic ERC-20 token:
+-	Locking;
+-	Issuing;
+-	Burning.
+
+
+## Description
+Note: it is important to recognize that there is a difference between an owner of tokens and the owner(s) of the token contract. The functions described in this interface can only be executed by the owner(s) of the token contract.
+
+With the regular ERC-20 token standard, it is not possible to change certain functions or characteristics after the token has been published However, with this interface the owner of an ERC-20 token contract is able to add additional functionalities that allow them to manage tokens after they have been published. 
+
+This interface enables the owner(s) of an ERC-20 token contract to lock tokens, issue additional tokens or burn tokens after the token has been published. Only the addresses in the list of owners can choose to execute these functions and only under certain conditions that are decided upon ahead of time. 
+
+This interface can for example be used to let the address of a crowdsale contract manage the token contract. Then, the crowdsale address is the only one that is able to unlock, issue or burn tokens. In this example, it could be decided that the token will remain locked until a crowdsale has been completed successfully. Only when the crowdsale has been completed successfully, can the crowdsale contract unlock the token. It is up to the initiator of the crowdsale contract to decide if the crowdsale contract is owned by one or several parties.
+
 
 ## Specification
 
 
-### IToken 
+### IManagedToken 
 
-#### totalSupply
+#### isLocked
 
-This function shows the total supply of tokens.
+This function shows whether the token is locked or not.
 
 ``` js
-function totalSupply() external view return (uint)
+function isLocked() external view returns (bool) 
 ```
 
 
 
-#### balanceOf
+#### lock
 
-This function shows the token balance of another account with address `_owner`. 
+This functions locks the token so that the transferring of value is disabled and shows whether the locking was successful or not. 
 
 ``` js
-function balanceOf(address _owner) external view returns (uint) 
+function lock() external returns (bool) 
 ```
 
 
 
-#### transfer
+#### unlock
 
-This function transfers `_value` tokens from the address of the account that signed the transaction to the address of the recipient. Afterwards it shows if the transaction was successful or not.
+This function unlocks the token so that the transferring of value is enabled and shows whether the unlocking was successful or not.
 
 ``` js
-function transfer(address _to, uint _value) external returns (bool)
+function unlock() external returns (bool) 
 ```
 
 
 
-#### transferFrom
+#### issue
 
-This function allows the signer of the transaction to transfer `_value` tokens on behalf of the address `_from` to the address of the recipient (`_to`). This is under the condition that the address `_from` has set aside an allowance for the spender. Afterwards it shows if the transaction was successful or not. 
+This function issues `_value` new tokens to the destination address and shows if the tokens were successfully issued or not. 
 
 ``` js
-function transferFrom(address _from, address _to, uint _value) external returns (bool)
+function issue(address _to, uint _value) external returns (bool) 
 ```
 
 
 
-#### approve
+#### burn
 
-This function allows `_spender` to withdraw from an account multiple times, up to the `_value’ amount. Afterwards it shows if the approval was successful or not. 
-
-Note: this is the original `approve` function. However, this function is relatively susceptible to attack vectors, like the ones [described here](https://docs.google.com/document/d/1YLPtQxZu1UAvO9cZ1O2RPXBbT0mooh4DYKjA_jp-RLM/) and discussed [here](https://github.com/ethereum/EIPs/issues/20#issuecomment-263524729)
-. 
-This is why this standard interface includes an alternative ‘approve’ function. 
+This function burns tokens from the address `_from` and shows whether the tokens were successfully burned or not.
 
 ``` js
-function approve(address _spender, uint _value) external returns (bool) 
-```
-
-
-#### approve
-
-This function allows `_spender` to withdraw from an account multiple times, up to the `_value’ amount. Afterwards it shows if the approval was successful or not. 
-
-Note: this is the alternative `approve` function. This is to prevent an attack vector, which is accomplished by adding an expected value to the function . 
-
-``` js
-function approve(address _spender, uint _value, uint _expected) external returns (bool); 
-```
-
-
-
-#### allowance
-
-This function shows the amount of remaining tokens that `_spender` is still allowed to withdraw from `_owner`.
-
-``` js
-function allowance(address _owner, address _spender) external view returns (uint)
+function burn(address _from, uint _value) external returns (bool) 
 ```
 
 
