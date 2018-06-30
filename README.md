@@ -11,9 +11,10 @@ created: 30/06/2018
 
 This is a standard interface to manage the crowdsale of an ERC-20 token on the Ethereum blockchain. This interface can be used by any venture (also non-crypto related ventures) to raise funds in a decentralized manner on the Ethereum blockchain.
 
+This crowdsale interface allows the initiator of the crowdsale to make use of two distinct phases: a presale phase and a main sale phase. Furthermore, it allows the initiator of the crowdsale to incentivize contributors to contribute early on and to contribute more during the main sale while minimizing the risk of early exits.
+
 
 ## Description
-This crowdsale mechanism allows the initiator of the crowdsale to make use of two distinct phases: a presale phase and a main sale phase. There are a few important distinctions between a presale phase and a main sale phase.
 
 A presale is a tokensale event that can be used prior to the actual main sale. The ether that is contributed during the presale phase is directly accessible to the initiator of the crowdsale and is often used for marketing and meetups prior to the main sale and to cover the expenses that were incurred in the run-up to the crowdsale. Investors that contribute during the presale often get a higher rate of tokens than the investors that contribute during the main sale. However, the contributions that are made during the presale phase are non-refundable. This means that if the presale does not raise the envisioned amount, investors during the presale phase will not get their contributions back. 
 
@@ -385,6 +386,5 @@ This for example enables smart contracts to interact with the crowdsale and inve
 ``` js
 function refundTo(address _beneficiary) external
 ```
-
 
 
