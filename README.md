@@ -1,4 +1,193 @@
-## Simple Summary
+# Generic crowdsale (light) and token repository
+
+### Simple Summary
+This generic crowdsale contains three different components.
+
+The first (Token) is a standard component for ERC-20 compatible tokens that
+allows for the implementation of a standard API for tokens within smart
+contracts and provides basic functionality to transfer tokens, as well as
+allow tokens to be approved so they can be spent by another on-chain third
+party.
+
+The second (ManagedToken) is a specialized component that adds adds additional 
+functionalities to the ERC-20 token contract that allows the token to be managed 
+after it has been published. This enables the owner(s) of the ERC-20 token contract 
+to lock tokens, issue additional tokens or burn tokens after the token has been 
+published. Only the addresses in the list of owners can choose to execute these 
+functions and these owners are only be able to execute these functions under certain
+conditions that are decided upon ahead of time.
+
+The third (Crowdsale) is a specialized component to manage the
+crowdsale of an ERC-20 token on the Ethereum blockchain. This component can
+be used by any venture (also non-crypto related ventures) to raise funds in
+a decentralized manner on the Ethereum blockchain.
+
+The combination of these three components can for be used to let the crowdsale 
+contract manage the token contract. Then, the crowdsale contract is the only one 
+that is able to unlock, issue or burn tokens. It could be decided that the token 
+will remain locked until the crowdsale has been completed successfully. Only when the
+crowdsale has been completed successfully, can the crowdsale contract unlock the token. 
+It is up to the initiator of the crowdsale contract to decide if the crowdsale 
+contract will be owned by one or multiple parties.
+
+## Simple Summary Token
+
+This is a standard interface for ERC-20 compatible tokens that is very similar to the original standard interface by Vogelsteller and Buterin. The standard allows for the implementation of a standard API for tokens within smart contracts and provides basic functionality to transfer tokens, as well as allow tokens to be approved so they can be spent by another on-chain third party. However, the original `approve` function in the ERC-20 token standard is relatively susceptible to attack vectors. This token standard attempts to solve this problem by adding an alternative `approve` function. 
+
+
+## Specification
+
+
+### Token
+
+#### totalSupply
+
+This function shows the total supply of tokens.
+
+``` js
+function totalSupply() external view return (uint)
+```
+
+
+
+#### balanceOf
+
+This function shows the token balance of another account with address `_owner`. 
+
+``` js
+function balanceOf(address _owner) external view returns (uint) 
+```
+
+
+
+#### transfer
+
+This function transfers `_value` tokens from the address of the account that signed the transaction to the address of the recipient. Afterwards it shows if the transaction was successful or not.
+
+``` js
+function transfer(address _to, uint _value) external returns (bool)
+```
+
+
+
+#### transferFrom
+
+This function allows the signer of the transaction to transfer `_value` tokens on behalf of the address `_from` to the address of the recipient (`_to`). This is under the condition that the address `_from` has set aside an allowance for the spender. Afterwards it shows if the transaction was successful or not. 
+
+``` js
+function transferFrom(address _from, address _to, uint _value) external returns (bool)
+```
+
+
+
+#### approve
+
+This function allows `_spender` to withdraw from an account multiple times, up to the `_value’ amount. Afterwards it shows if the approval was successful or not. 
+
+Note: this is the original `approve` function. However, this function is relatively susceptible to attack vectors, like the ones [described here](https://docs.google.com/document/d/1YLPtQxZu1UAvO9cZ1O2RPXBbT0mooh4DYKjA_jp-RLM/) and discussed [here](https://github.com/ethereum/EIPs/issues/20#issuecomment-263524729). 
+This is why this standard interface includes an alternative ‘approve’ function. 
+
+``` js
+function approve(address _spender, uint _value) external returns (bool) 
+```
+
+
+
+#### approve
+
+This function allows `_spender` to withdraw from an account multiple times, up to the `_value’ amount. Afterwards it shows if the approval was successful or not. 
+
+Note: this is the alternative `approve` function. This is to prevent a front running attack vector, which is accomplished by adding an expected value to the function. When the function is executed it is required that the `_expected` value matches the actual allowance of `_spender`.
+
+``` js
+function approve(address _spender, uint _value, uint _expected) external returns (bool); 
+```
+
+
+
+#### allowance
+
+This function shows the amount of remaining tokens that `_spender` is still allowed to withdraw from `_owner`.
+
+``` js
+function allowance(address _owner, address _spender) external view returns (uint)
+```
+ 
+
+
+## Simple Summary ManagedToken
+
+This is a standard interface that adds the following functionalities to the basic ERC-20 token:
+-	Locking;
+-	Issuing;
+-	Burning.
+
+
+## Description
+Note: it is important to recognize that there is a difference between an owner of tokens and the owner(s) of the token contract. The functions described in this interface can only be executed by the owner(s) of the token contract.
+
+With the regular ERC-20 token standard, it is not possible to change certain functions or characteristics after the token has been published However, with this interface the creator of an ERC-20 token contract to add additional functionalities that allows the token to be managed after it has been published.
+
+This interface enables the owner(s) of an ERC-20 token contract to lock tokens, issue additional tokens or burn tokens after the token has been published. Only the addresses in the list of owners can choose to execute these functions and these owners should only be able to execute these functions under certain conditions that are decided upon ahead of time.
+
+This interface can for example be used to let the address of a crowdsale contract manage the token contract. Then, the crowdsale address is the only one that is able to unlock, issue or burn tokens. In this example, it could be decided that the token will remain locked until a crowdsale has been completed successfully. Only when the crowdsale has been completed successfully, can the crowdsale contract unlock the token. It is up to the initiator of the crowdsale contract to decide if the crowdsale contract is owned by one or several parties.
+
+
+## Specification
+
+
+### ManagedToken
+
+#### isLocked
+
+This function shows whether the token is locked or not.
+
+``` js
+function isLocked() external view returns (bool) 
+```
+
+
+
+#### lock
+
+This functions locks the token so that the transferring of value is disabled and shows whether the locking was successful or not. 
+
+``` js
+function lock() external returns (bool) 
+```
+
+
+
+#### unlock
+
+This function unlocks the token so that the transferring of value is enabled and shows whether the unlocking was successful or not.
+
+``` js
+function unlock() external returns (bool) 
+```
+
+
+
+#### issue
+
+This function issues `_value` new tokens to the destination address and shows if the tokens were successfully issued or not. 
+
+``` js
+function issue(address _to, uint _value) external returns (bool) 
+```
+
+
+
+#### burn
+
+This function burns tokens from the address `_from` and shows whether the tokens were successfully burned or not.
+
+``` js
+function burn(address _from, uint _value) external returns (bool) 
+```
+
+ 
+## Simple Summary Crowdsale
 
 This is a standard interface to manage the crowdsale of an ERC-20 token on the Ethereum blockchain. This interface can be used by any venture (also non-crypto related ventures) to raise funds in a decentralized manner on the Ethereum blockchain.
 
@@ -9,11 +198,12 @@ This crowdsale interface allows the initiator of the crowdsale to make use of tw
 
 A presale is a tokensale event that can be used prior to the actual main sale. The ether that is contributed during the presale phase is directly accessible to the initiator of the crowdsale and is often used for marketing and meetups prior to the main sale and to cover the expenses that were incurred in the run-up to the crowdsale. Investors that contribute during the presale often get a higher rate of tokens than the investors that contribute during the main sale. However, the contributions that are made during the presale phase are non-refundable. This means that if the presale does not raise the envisioned amount, investors during the presale phase will not get their contributions back. 
 
-The ether that is contributed during the main sale stage is accessible to the initiator after the crowdsale and only when the crowdsale was successful. The investors that contribute during the main sale stage get a lower rate of tokens than the investors that contribute during the presale. However, their contributions are refundable in the case of a failed crowdsale. A crowdsale is considered failed if it does not raise the envisioned minimum amount. In this case, the main sale contributors will be refunded their complete funds (minus the transaction fees). 
+The ether that is contributed during the main sale stage is accessible to the initiator after the crowdsale and only when the crowdsale was successful. The investors that contribute during the main sale stage get a lower rate of tokens than the investors that contribute during the presale. However, their contributions are refundable in the case of a failed crowdsale. A crowdsale is considered failed if it does not raise the envisioned minimum amount. In this case, the main sale contributors can execute the `refund` or `refundTo` functions to get back their complete funds (minus the transaction fees).
 
 This standard interface also allows the initiator to incentivize investors to contribute early on during the main sale. It does so by giving the initiator the possibility to assign different conversion rates to different timeframes within the main sale. For example, investors that contribute during the first 24 hours of the main sale could be rewarded with an allocation of 20% bonus tokens. Investors that contribute during the first week could for example be rewarded with an allocation of 10% bonus tokens, while the investors that contribute after the first week are not rewarded with any bonus tokens. This standard interface includes the possibility to temporarily allocate the bonus tokens and to release them at a later date, to prevent early exits with the bonus tokens.
 
 This standard interface also allows the initiator of the crowdsale to incentivize investors to contribute more. It does so by giving the initiator the possibility to assign different volume multipliers to different investment amounts. The initiator can distinguish between different categories of investment amounts. For example, investors that contribute more than 100 ether could be rewarded with an allocation of 20% bonus tokens. Investors that contribute more than 20 ether could be rewarded with an allocation of 10% bonus tokens, while the investors that contribute less than 20 ether are not rewarded with any bonus tokens. This standard interface includes the possibility to temporarily allocate the bonus tokens and to release them at a later date, to prevent early exits with the bonus tokens.
+
 
 ## Specification
 
@@ -70,6 +260,7 @@ uint public minAmountPresale
 ```
 
 
+
 #### maxAmountPresale
 
 This integer shows the maximum amount of ether that can be received during the presale. If this amount is reached, the presale will stop.
@@ -87,6 +278,7 @@ This integer shows the minimum amount that is accepted per individual contributi
 ``` js
 uint public minAcceptedAmountPresale 
 ```
+
 
 
 #### beneficiary
@@ -289,7 +481,7 @@ This function receives the ether from the sender (a contributor to the crowdsale
 Note: this function requires that the sender is not a contract. This is required because it’s not possible for a contract to specify a gas amount when calling the (internal) send() function. Solidity imposes a maximum amount of gas (2300 gas at the time of writing). Instead, contracts can call the `contribute` function. 
 
 ``` js
-Function () external payable
+function () external payable
 ```
 
 
@@ -317,7 +509,7 @@ function contributeFor(address _beneficiary) external payable returns (uint)
 
 #### withdrawTokens
 
-This function withdraws allocated tokens. When this function is executed by an address that has a balance of allocated tokens with a release date that is in the past (< now) and with a balance that is larger than 0, the tokens are created and the amount is subtracted from the allocated balance for that address. Afterwards, the tokens are sent to the address that has executed the `withdrawTokens` function.   
+This function withdraws allocated tokens. When this function is executed by an address that has a balance of allocated tokens with a release date that is in the past (< now) and with a balance that is larger than 0, the tokens are created and the amount is subtracted from the allocated balance for that address. Afterwards, the tokens are sent to the address that has executed the `withdrawTokens` function.  
 
 ``` js
 function withdrawTokens() external 
@@ -337,7 +529,7 @@ function withdrawTokensTo(address _beneficiary) external
 
 #### withdrawEther
 
-This function withdraws ether. When this function is executed by an address that has a balance of allocated ether with a release date that is in the past (< now) and which has a balance that is larger than 0, the ether is subtracted from the allocated balance for that address and sent to the address that has executed the `withdrawEther` function.  
+This function withdraws ether. When this function is executed by an address that has a balance of allocated ether with a release date that is in the past (< now) and which has a balance that is larger than 0, the ether is subtracted from the allocated balance for that address and sent to the address that has executed the `withdrawEther` function. 
 
 ``` js
 function withdrawEther() external
@@ -377,3 +569,47 @@ This for example enables smart contracts to interact with the crowdsale and inve
 ``` js
 function refundTo(address _beneficiary) external
 ```
+ 
+  
+
+## Preparing development environment
+
+1. `git clone` this repository.
+2. Install Docker. This is needed to run the Test RCP client in an isolated
+   environment.
+3. Install Node Package Manager (NPM). See [installation
+   instructions](https://www.npmjs.com/get-npm)
+4. Install the Solidity Compiler (`solc`). See [installation
+   instructions](http://solidity.readthedocs.io/en/develop/installing-solidity.html).
+5. Run `npm install` to install project dependencies from `package.json`.
+
+## Dependency Management
+
+NPM dependencies are defined in `package.json`.
+This makes it easy for all developers to use the same versions of dependencies, instead of relying on globally installed dependencies using `npm install -g`.
+
+To add a new dependency, execute `npm install --save-dev [package_name]`. This adds a new entry to `package.json`. Make sure you commit this change.
+
+## Code Style
+
+### Solidity
+
+We strive to adhere to the [Solidity Style
+Guide](http://solidity.readthedocs.io/en/latest/style-guide.html) as much as
+possible. The [Solium](https://github.com/duaraghav8/Solium)
+linter has been added to check code against this Style Guide. The linter is run
+automatically by Continuous Integration.
+
+### Javascript
+
+For plain Javascript files (e.g. tests), the [Javascript Standard
+Style](https://standardjs.com/) is used. There are several
+[plugins](https://standardjs.com/#are-there-text-editor-plugins) available for
+widely-used editors. These also support automatic fixing. This linter is run
+automatically by Continuous Integration.
+
+## Credits
+
+[Frank Bonnet](https://www.linkedin.com/in/frank-bonnet-3b890865/) Software engineer  
+[Mark Reuvers](https://www.linkedin.com/in/mark-reuvers/)  
+
